@@ -1,4 +1,4 @@
-package com.example.myapp; // Substitua pelo seu pacote
+package com.example.myapp; // Substitua pelo pacote do seu projeto
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -16,14 +16,22 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private TextView locationTextView, speedTextView;
     private Button startButton, stopButton;
+    private MapView mapView;
+    private GoogleMap googleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +43,17 @@ public class MainActivity extends AppCompatActivity {
         speedTextView = findViewById(R.id.speedTextView);
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
+        mapView = findViewById(R.id.mapView);
+
+        // Verificar se o MapView foi encontrado
+        if (mapView == null) {
+            Toast.makeText(this, "Erro: MapView não encontrado no layout", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Inicializar o MapView
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
 
         // Inicializar o FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -43,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
                 for (Location location : locationResult.getLocations()) {
                     // Atualizar a UI com a latitude e longitude
                     String locationText = "Latitude: " + location.getLatitude() +
@@ -56,6 +76,14 @@ public class MainActivity extends AppCompatActivity {
                         speedTextView.setText(String.format("Velocidade: %.2f km/h", speedKmh));
                     } else {
                         speedTextView.setText("Velocidade: Não disponível");
+                    }
+
+                    // Atualizar o mapa com a nova localização
+                    if (googleMap != null) {
+                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        googleMap.clear();
+                        googleMap.addMarker(new MarkerOptions().position(currentLocation).title("Você está aqui"));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
                     }
                 }
             }
@@ -83,15 +111,37 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         // Iniciar atualizações de localização
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        Toast.makeText(this, "Rastreamento iniciado", Toast.LENGTH_SHORT).show();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Falha ao iniciar rastreamento: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    });
+            Toast.makeText(this, "Rastreamento iniciado", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void stopLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(locationCallback);
-        locationTextView.setText("Localização: Aguardando...");
-        speedTextView.setText("Velocidade: Aguardando...");
-        Toast.makeText(this, "Rastreamento parado", Toast.LENGTH_SHORT).show();
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+                .addOnSuccessListener(aVoid -> {
+                    locationTextView.setText("Localização: Aguardando...");
+                    speedTextView.setText("Velocidade: Aguardando...");
+                    Toast.makeText(this, "Rastreamento parado", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Falha ao parar rastreamento: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        googleMap = map;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+        } else {
+            Toast.makeText(this, "Permissão de localização necessária para o mapa", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -108,8 +158,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (mapView != null) {
+            mapView.onResume();
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
+        if (mapView != null) {
+            mapView.onPause();
+        }
         stopLocationUpdates();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mapView != null) {
+            mapView.onDestroy();
+        }
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (mapView != null) {
+            mapView.onLowMemory();
+        }
     }
 }

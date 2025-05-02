@@ -1,37 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="24dp"
+    android:background="@android:color/white">
 
+    <!-- Title -->
     <TextView
-        android:id="@+id/locationTextView"
-        android:layout_width="wrap_content"
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Localização: Aguardando..."
-        android:textSize="18sp"/>
+        android:text="Rastreamento de Localização"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#212121"
+        android:fontFamily="sans-serif-medium"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <TextView
-        android:id="@+id/speedTextView"
-        android:layout_width="wrap_content"
+    <!-- Card for Location -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/locationCard"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Velocidade: Aguardando..."
-        android:textSize="18sp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="24dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="12dp"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_menu_mylocation"
+                app:tint="#3F51B5" />
+
+            <TextView
+                android:id="@+id/locationTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Localização: Aguardando..."
+                android:textSize="18sp"
+                android:textColor="#212121"
+                android:layout_marginStart="16dp"
+                android:fontFamily="sans-serif"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Card for Speed -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/speedCard"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Iniciar Rastreamento"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="12dp"
+        app:layout_constraintTop_toBottomOf="@id/locationCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/stopButton"
-        android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_media_play"
+                app:tint="#FF5722" />
+
+            <TextView
+                android:id="@+id/speedTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Velocidade: Aguardando..."
+                android:textSize="18sp"
+                android:textColor="#212121"
+                android:layout_marginStart="16dp"
+                android:fontFamily="sans-serif"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Buttons container -->
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Parar Rastreamento"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="2"
+        app:layout_constraintTop_toBottomOf="@id/speedCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-</LinearLayout>
+        <Button
+            android:id="@+id/startButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Iniciar"
+            android:layout_weight="1"
+            android:backgroundTint="#4CAF50"
+            android:textColor="@android:color/white"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginEnd="8dp"
+            android:padding="12dp"/>
+
+        <Button
+            android:id="@+id/stopButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Parar"
+            android:layout_weight="1"
+            android:backgroundTint="#F44336"
+            android:textColor="@android:color/white"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginStart="8dp"
+            android:padding="12dp"/>
+    </LinearLayout>
+
+    <!-- MapView -->
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:background="#ECEFF1"
+        app:layout_constraintTop_toBottomOf="@id/buttonContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
