@@ -2,7 +2,7 @@
     <style name="Theme.MyApp" parent="Theme.Material3.DayNight">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimary">@color/gray_500</item>
         <item name="colorSecondary">@color/teal_200</item>
     </style>
 </resources>

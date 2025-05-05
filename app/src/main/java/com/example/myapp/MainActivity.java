@@ -1,4 +1,4 @@
-package com.example.myapp; // Substitua pelo pacote do seu projeto
+package com.example.myapp;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (location.hasSpeed()) {
                         float speedMs = location.getSpeed(); // Velocidade em m/s
                         float speedKmh = speedMs * 3.6f; // Converter para km/h
-                        speedTextView.setText(String.format("Velocidade: %.2f km/h", speedKmh));
+                        speedTextView.setText(String.format("Velocidade: %.0f km/h", speedKmh));
                     } else {
                         speedTextView.setText("Velocidade: Não disponível");
                     }
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                         googleMap.clear();
                         googleMap.addMarker(new MarkerOptions().position(currentLocation).title("Você está aqui"));
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 25));
                     }
                 }
             }
@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Configurar a solicitação de localização
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5000); // Atualizar a cada 5 segundos
-        locationRequest.setFastestInterval(2000); // Intervalo mais rápido
+        locationRequest.setInterval(1000); // Atualizar a cada 0,5 segundos
+        locationRequest.setFastestInterval(400); // Intervalo mais rápido
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         // Iniciar atualizações de localização
