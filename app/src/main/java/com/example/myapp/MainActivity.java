@@ -1,10 +1,14 @@
 package com.example.myapp;
 
+import android.content.Intent;
+import android.util.Log;
+import android.content.res.Resources;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -29,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private TextView locationTextView, speedTextView;
-    private Button startButton, stopButton;
+    private Button startButton, stopButton, btnNext;
     private MapView mapView;
     private GoogleMap googleMap;
 
@@ -44,6 +49,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
         mapView = findViewById(R.id.mapView);
+        btnNext = findViewById(R.id.btnNext);
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Verificar se o MapView foi encontrado
         if (mapView == null) {
@@ -83,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                         googleMap.clear();
                         googleMap.addMarker(new MarkerOptions().position(currentLocation).title("Você está aqui"));
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 25));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
                     }
                 }
             }
@@ -95,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void startLocationUpdates() {
-        // Verificar permissões
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -104,13 +117,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-        // Configurar a solicitação de localização
         LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1000); // Atualizar a cada 0,5 segundos
-        locationRequest.setFastestInterval(400); // Intervalo mais rápido
+        locationRequest.setInterval(1000); // Atualizar a cada 1 segundo
+        locationRequest.setFastestInterval(500); // Intervalo mais rápido
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setSmallestDisplacement(10); // Mínima distância de 10 metros para atualizar a localização
 
-        // Iniciar atualizações de localização
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
@@ -120,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Toast.makeText(this, "Rastreamento iniciado", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
@@ -136,13 +149,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
+
+        // Verificar permissões
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             googleMap.setMyLocationEnabled(true);
         } else {
             Toast.makeText(this, "Permissão de localização necessária para o mapa", Toast.LENGTH_LONG).show();
         }
+
+        // Carregar o estilo personalizado
+        try {
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
+            if (!success) {
+                Log.e("Map", "Erro ao aplicar o estilo.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("Map", "Não foi possível carregar o estilo do mapa.", e);
+        }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,

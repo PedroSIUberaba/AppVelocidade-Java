@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2196F3"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/speedText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="0.0 km/h"
+        android:textColor="#FFF"
+        android:textSize="48sp" />
+
+    <TextView
+        android:id="@+id/time0to100"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="0–100: --"
+        android:textColor="#FFF"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/time100to200"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="100–200: --"
+        android:textColor="#FFF"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnPrev"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#000000"
+        android:fontFamily="@font/poppins"
+        android:text="Voltar"
+        android:textColor="@android:color/white" />
+</LinearLayout>

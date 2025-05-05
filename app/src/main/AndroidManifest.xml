@@ -23,6 +23,9 @@
     <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBfyVOUY8uglx7sAktxfGQSHx2CnUhHr2U"/>
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <activity
             android:name=".MainActivity"
@@ -31,6 +34,11 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".SecondActivity"
+            android:exported="true">
         </activity>
 
     </application>
